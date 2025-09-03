@@ -18,6 +18,7 @@ sudo yum install -y docker
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo usermod -a -G docker ec2-user
+再起動
 
 sudo mkdir -p /usr/local/lib/docker/cli-plugins/
 sudo curl -SL https://github.com/docker/compose/releases/download/v2.36.0/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
@@ -51,7 +52,6 @@ services:
       - image:/var/www/upload/image/
     depends_on:
       - php
-
   php:
     container_name: php
     build:
@@ -60,7 +60,6 @@ services:
     volumes:
       - ./public/:/var/www/public/
       - image:/var/www/upload/image/
-
   mysql:
     container_name: mysql
     image: mysql:8.4
@@ -70,22 +69,21 @@ services:
       TZ: Asia/Tokyo
     volumes:
       - mysql:/var/lib/mysql
-    command: >
+   command: >
       mysqld
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
       --max_allowed_packet=4MB
-
 volumes:
   mysql:
   image:
 EOF
 
-docker compose up
+docker compose up -d --build
 
 # ▼ Nginx 設定ファイル作成
-mkdir -p nginx/conf.d
-cat << 'EOF' > nginx/conf.d/default.conf
+vim nginx/conf.d/default.conf
+
 server {
     listen 80;
     server_name _;
